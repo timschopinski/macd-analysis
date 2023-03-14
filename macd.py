@@ -24,6 +24,7 @@ def calculate_macd_data(n1: int = 12, n2: int = 26):
     data['ema1'] = data['close'].rolling(n1+1).apply(calculate_ema)
     data['ema2'] = data['close'].rolling(n2+1).apply(calculate_ema)
     data['macd'] = data['ema1'] - data['ema2']
+    data['histogram'] = data['macd'] - data['signal']
     data.dropna(subset=['macd'], inplace=True)
     data['signal'] = data['macd'].rolling(signal_length+1).apply(calculate_ema)
     data.dropna(subset=['signal'], inplace=True)
@@ -41,7 +42,7 @@ def get_macd(data: pd.DataFrame) -> pd.DataFrame:
     data['ema26'] = ema26
     data['macd'] = macd
     data['signal'] = signal
-
+    data['histogram'] = data['macd'] - data['signal']
     return data
 
 
