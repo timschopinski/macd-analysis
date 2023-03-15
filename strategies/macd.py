@@ -1,7 +1,6 @@
 import pandas as pd
-import itertools
-
-from btc_data import get_data
+from datasets.btc_data import get_data
+from backtesting.macd_backtester import MACDTester
 
 
 def calculate_macd_data(n1: int = 12, n2: int = 26):
@@ -47,38 +46,12 @@ def get_macd(data: pd.DataFrame, first_ema: int = 12, second_ema: int = 26) -> p
     return data
 
 
-def find_optimal_macd_parameters(data: pd.DataFrame, start_amount: float = 1000) -> tuple:
-    best_params = (12, 26)
-    best_return = -float('inf')
-
-    first_ema_range = range(5, 30)
-    second_ema_range = range(10, 50)
-
-    for params in itertools.product(first_ema_range, second_ema_range):
-        first_ema, second_ema = params
-        if first_ema == second_ema:
-            continue
-        macd_data = get_macd(data, first_ema=first_ema, second_ema=second_ema)
-        total_return = backtest_macd(macd_data, start_amount=start_amount)
-        print(f'Total Return: {total_return}')
-        if total_return > best_return:
-            best_return = total_return
-            best_params = params
-
-    return best_params
-
-
 if __name__ == '__main__':
     data = get_data()
     macd_data = get_macd(data, 29, 48)
     # data = calculate_macd_data()
     print(macd_data)
-    print(macd_data['macd'])
-    print(macd_data['signal'])
-    print(macd_data.index.to_list()[999])
-    from backtesting.macd_backtest import backtest_macd
 
-    total_return, b, _ = backtest_macd(macd_data)
-    print(b)
+    macd_tester = MACDTester(data)
+    total_return = macd_tester.get_total_return()
     print(total_return)
-    # print(find_optimal_macd_parameters(data))
