@@ -8,17 +8,17 @@ class Point(NamedTuple):
     This class represents a Point
     with a date as x value and price as y value
     """
+
     date: Timestamp
     price: float
 
 
 class MACDTester:
-
     def __init__(
         self,
         data: DataFrame,
         start_amount: float = 1000,
-        stop_loss: float | None = None
+        stop_loss: float | None = None,
     ):
         self.data = data
         self.start_amount = start_amount
@@ -63,8 +63,8 @@ class MACDTester:
         for i in range(len(self.data)):
             date = self.data.index[i]
             row = self.data.iloc[i]
-            histogram = row['histogram']
-            close_price = row['close']
+            histogram = row["histogram"]
+            close_price = row["close"]
             stop_loss_order = self.stop_loss_manager.get_order(close_price, holding)
             if stop_loss_order == StopLossOrder.SELL:
                 holding = self._sell(date, close_price)

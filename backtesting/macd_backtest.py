@@ -8,8 +8,8 @@ def backtest_macd(data: DataFrame, start_amount: float = 1000) -> float:
     close_price = 0
     for i in range(len(data)):
         row = data.iloc[i]
-        histogram = row['histogram']
-        close_price = row['close']
+        histogram = row["histogram"]
+        close_price = row["close"]
         if histogram > 0 and not holding:
             asset_amount = capital / close_price
             capital = 0

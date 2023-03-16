@@ -4,9 +4,11 @@ from backtesting.macd_backtest import backtest_macd
 from strategies.macd import get_macd
 
 
-def find_optimal_macd_parameters(data: DataFrame, start_amount: float = 1000) -> tuple[int, int]:
+def find_optimal_macd_parameters(
+    data: DataFrame, start_amount: float = 1000
+) -> tuple[int, int]:
     best_params = (12, 26)
-    best_return = -float('inf')
+    best_return = -float("inf")
 
     first_ema_range = range(5, 30)
     second_ema_range = range(10, 50)
@@ -24,9 +26,10 @@ def find_optimal_macd_parameters(data: DataFrame, start_amount: float = 1000) ->
     return best_params
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import cProfile
     from datasets.btc_data import get_data
     from utils.time_frame import TimeFrame
+
     data = get_data(TimeFrame.DAILY, slice_=100)
-    cProfile.run('find_optimal_macd_parameters(data)')
+    cProfile.run("find_optimal_macd_parameters(data)")

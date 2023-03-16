@@ -2,7 +2,6 @@ from utils.stop_loss import StopLossOrder
 
 
 class StopLossManager:
-
     def __init__(self, stop_loss: float):
         self._stop_loss = stop_loss
         self._recent_action_price = 0

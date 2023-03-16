@@ -14,4 +14,3 @@ def get_optimized_stop_loss(data: DataFrame) -> float:
             best_stop_loss = stop_loss
 
     return best_stop_loss
-
