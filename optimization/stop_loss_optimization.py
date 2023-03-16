@@ -2,7 +2,7 @@ from pandas import DataFrame
 from backtesting.macd_backtester import MACDTester
 
 
-def get_optimized_stop_loss(data: DataFrame):
+def get_optimized_stop_loss(data: DataFrame) -> float:
     best_stop_loss = 0
     max_return = 0
     for i in range(30):

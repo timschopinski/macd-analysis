@@ -1,9 +1,11 @@
 import pandas as pd
+from pandas import DataFrame
+
 from datasets.btc_data import get_data
 from backtesting.macd_backtester import MACDTester
 
 
-def calculate_macd_data(n1: int = 12, n2: int = 26):
+def calculate_macd_data(n1: int = 12, n2: int = 26) -> DataFrame:
     data = get_data()[['close']].copy()
     data = data.head(1000)
 
@@ -31,7 +33,7 @@ def calculate_macd_data(n1: int = 12, n2: int = 26):
     return data
 
 
-def get_macd(data: pd.DataFrame, first_ema: int = 12, second_ema: int = 26) -> pd.DataFrame:
+def get_macd(data: DataFrame, first_ema: int = 12, second_ema: int = 26) -> DataFrame:
     first_ema_data = data['close'].ewm(span=first_ema, adjust=False).mean()
     second_ema_data = data['close'].ewm(span=second_ema, adjust=False).mean()
 
