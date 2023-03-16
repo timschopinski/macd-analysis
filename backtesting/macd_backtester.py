@@ -63,15 +63,14 @@ class MACDTester:
         for i in range(len(self.data)):
             date = self.data.index[i]
             row = self.data.iloc[i]
-            macd = row['macd']
+            histogram = row['histogram']
             close_price = row['close']
-            signal = row['signal']
             stop_loss_order = self.stop_loss_manager.get_order(close_price, holding)
             if stop_loss_order == StopLossOrder.SELL:
                 holding = self._sell(date, close_price)
-            elif macd > signal and not holding:
+            elif histogram > 0 and not holding:
                 holding = self._buy(date, close_price)
-            elif macd < signal and holding:
+            elif histogram < 0 and holding:
                 holding = self._sell(date, close_price)
         if self.capital:
             total_return = self.capital - self.start_amount
