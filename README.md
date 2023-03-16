@@ -1,13 +1,13 @@
-#MACD Analysis for BTC/USD
+# MACD Analysis for BTC/USD
 This analysis is based on the BTC/USD data.
 
-##Overview
+## Overview
 The MACD (Moving Average Convergence Divergence) is a popular technical analysis tool used to identify trends and momentum in financial markets. The MACD indicator is based on the difference between two Exponential Moving Averages (EMA), typically the 12-period EMA and the 26-period EMA.
 
-##EMA Optimization
+## EMA Optimization
 To optimize the MACD indicator, we will experiment with different values of the two EMAs. We will use a range of values for the two EMAs (between 5 and 35) and use the best values that result in the highest profit.
 
-##Stop Loss
+## Stop Loss
 Stop loss is an important aspect of trading that helps limit losses in case of unexpected market movements. In this analysis, we will use a simple stop loss strategy where we exit the position if the price falls by a certain percentage (e.g. 2%).
 
 ##Backtesting
