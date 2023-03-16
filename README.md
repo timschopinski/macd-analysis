@@ -10,17 +10,17 @@ To optimize the MACD indicator, we will experiment with different values of the 
 ## Stop Loss
 Stop loss is an important aspect of trading that helps limit losses in case of unexpected market movements. In this analysis, we will use a simple stop loss strategy where we exit the position if the price falls by a certain percentage (e.g. 2%).
 
-##Backtesting
+## Backtesting
 We will use the historical BTC/USD data to backtest our MACD strategy. We will simulate trading for a period of time and measure the profit/loss of the strategy. This will help us determine the effectiveness of the strategy.
 
-##Results
+## Results
 The results of the MACD analysis are available in the main.ipynb notebook. The notebook contains the code for optimizing the MACD parameters, applying the stop loss strategy, and backtesting the strategy on the BTC/USD data.
 
-##Source
+## Source
 The BTC/USD data used in this analysis is available on Kaggle at https://www.kaggle.com/datasets/prasoonkottarathil/btcinusd.
 
-Conclusion
+## Conclusion
 The MACD indicator can be used to generate profitable trading signals in the BTC/USD market. By optimizing the EMAs and introducing a stop loss, the risk of the strategy can be minimized while still generating a satisfactory return on investment.
 
-##License
+## License
 MIT
