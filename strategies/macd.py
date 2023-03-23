@@ -1,10 +1,11 @@
 from pandas import DataFrame
 from datasets.btc_data import get_data
 from backtesting.macd_backtester import MACDTester
+from utils.time_frame import TimeFrame
 
 
 def calculate_macd_data(n1: int = 12, n2: int = 26) -> DataFrame:
-    data = get_data()[["close"]].copy()
+    data = get_data(TimeFrame.DAILY)[["close"]].copy()
     data = data.head(1000)
 
     signal_length = 9
@@ -47,7 +48,7 @@ def get_macd(data: DataFrame, first_ema: int = 12, second_ema: int = 26) -> Data
 
 
 if __name__ == "__main__":
-    data = get_data()
+    data = get_data(TimeFrame.DAILY)
     macd_data = get_macd(data, 29, 48)
     # data = calculate_macd_data()
     print(macd_data)
