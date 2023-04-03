@@ -2,12 +2,32 @@ from pandas import DataFrame
 from datasets.btc_data import get_data
 from backtesting.macd_backtester import MACDTester
 from utils.time_frame import TimeFrame
+import matplotlib.pyplot as plt
 
 
-def calculate_macd_data(n1: int = 12, n2: int = 26) -> DataFrame:
-    data = get_data(TimeFrame.DAILY)[["close"]].copy()
-    data = data.head(1000)
+def plot_macd(macd: DataFrame, histogram: bool = False) -> None:
+    fig, ax = plt.subplots(figsize=(20, 8))
+    ax.set_facecolor("lightgray")
+    fig.set_facecolor("lightgray")
+    plt.plot(macd["macd"], label="MACD", color="red", lw=0.4)
+    plt.plot(macd["signal"], label="Signal", color="green", lw=0.3)
+    if histogram:
+        plt.bar(
+            macd.index, macd["histogram"], color="orange", width=0.4, label="Histogram"
+        )
 
+    plt.axhline(0, color="black", lw=2)
+
+    plt.xlabel("Date")
+    plt.ylabel("MACD")
+    plt.title("MACD and Signal with Histogram")
+    plt.legend(loc="upper left")
+
+    # display the plot
+    plt.show()
+
+
+def get_macd_2(data: DataFrame, first_ema: int = 12, second_ema: int = 26) -> DataFrame:
     signal_length = 9
 
     def calculate_ema(window):
@@ -22,8 +42,8 @@ def calculate_macd_data(n1: int = 12, n2: int = 26) -> DataFrame:
         ema = meter / denominator
         return ema
 
-    data["ema1"] = data["close"].rolling(n1 + 1).apply(calculate_ema)
-    data["ema2"] = data["close"].rolling(n2 + 1).apply(calculate_ema)
+    data["ema1"] = data["close"].rolling(first_ema + 1).apply(calculate_ema)
+    data["ema2"] = data["close"].rolling(second_ema + 1).apply(calculate_ema)
     data["macd"] = data["ema1"] - data["ema2"]
     data.dropna(subset=["macd"], inplace=True)
     data["signal"] = data["macd"].rolling(signal_length + 1).apply(calculate_ema)
@@ -56,3 +76,4 @@ if __name__ == "__main__":
     macd_tester = MACDTester(data)
     total_return = macd_tester.get_total_return()
     print(total_return)
+    plot_macd(macd_data)
