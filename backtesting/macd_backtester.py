@@ -19,6 +19,7 @@ class MACDTester:
         data: DataFrame,
         start_amount: float = 1000,
         stop_loss: float | None = None,
+        commission: float = 0,
     ):
         self.data = data
         self.start_amount = start_amount
@@ -27,6 +28,9 @@ class MACDTester:
         self.capital = start_amount
         self.asset_amount = 0
         self.stop_loss_manager = StopLossManager(stop_loss)
+        self.num_of_transactions = 0
+        self.commission = commission
+        self.total_commission = 0
 
     def get_sell_dates(self) -> List[Timestamp]:
         return list(map(lambda point: point.date, self.sell_points))
@@ -40,18 +44,23 @@ class MACDTester:
     def get_buy_prices(self) -> List[float]:
         return list(map(lambda point: point.price, self.buy_points))
 
+    def _finish_transaction_details(self, price: float) -> None:
+        self.stop_loss_manager.set_recent_action_price(price)
+        self.num_of_transactions += 1
+        self.total_commission += self.commission * price
+
     def _buy(self, date: Timestamp, price: float) -> bool:
         self.asset_amount = self.capital / price
         self.capital = 0
         self.buy_points.append(Point(date, price))
-        self.stop_loss_manager.set_recent_action_price(price)
+        self._finish_transaction_details(price)
         return True
 
     def _sell(self, date: Timestamp, price: float) -> bool:
         self.capital = self.asset_amount * price
         self.asset_amount = 0
         self.sell_points.append(Point(date, price))
-        self.stop_loss_manager.set_recent_action_price(price)
+        self._finish_transaction_details(price)
         return False
 
     def get_total_return(self) -> float:
@@ -76,5 +85,5 @@ class MACDTester:
             total_return = self.capital - self.start_amount
         else:
             total_return = self.asset_amount * close_price - self.start_amount
-
+        total_return = total_return - self.total_commission
         return total_return
