@@ -91,15 +91,20 @@ def get_macd_2(data: DataFrame, first_ema: int = 12, second_ema: int = 26) -> Da
     return data.dropna()
 
 
-def get_macd(data: DataFrame, first_ema: int = 12, second_ema: int = 26) -> DataFrame:
-    first_ema_data = data["close"].ewm(span=first_ema, adjust=False).mean()
-    second_ema_data = data["close"].ewm(span=second_ema, adjust=False).mean()
+def get_macd(
+    data: DataFrame,
+    short_ema_length: int = 12,
+    long_ema_length: int = 26,
+    signal_length: int = 9,
+) -> DataFrame:
+    short_ema_data = data["close"].ewm(span=short_ema_length, adjust=False).mean()
+    long_ema_data = data["close"].ewm(span=long_ema_length, adjust=False).mean()
 
-    macd = first_ema_data - second_ema_data
-    signal = macd.ewm(span=9, adjust=False).mean()
+    macd = short_ema_data - long_ema_data
+    signal = macd.ewm(span=signal_length, adjust=False).mean()
 
-    data[f"ema{first_ema}"] = first_ema_data
-    data[f"ema{second_ema}"] = second_ema_data
+    data[f"ema{short_ema_length}"] = short_ema_data
+    data[f"ema{long_ema_length}"] = long_ema_data
     data["macd"] = macd
     data["signal"] = signal
     data["histogram"] = data["macd"] - data["signal"]
