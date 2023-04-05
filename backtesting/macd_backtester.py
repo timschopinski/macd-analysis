@@ -3,6 +3,7 @@ from pandas import DataFrame, Timestamp
 from backtesting.stop_loss import StopLossManager, StopLossOrder
 from models.transaction import Transaction, TransactionType
 from logger.logger import TransactionLogger
+from backtesting.buy_and_sell_level import BuyAndSellLevelManager
 
 
 class MACDTester:
@@ -12,6 +13,8 @@ class MACDTester:
         start_amount: float = 1000,
         stop_loss: float | None = None,
         commission: float = 0,
+        macd_buy_level: float | None = None,
+        macd_sell_level: float | None = None,
     ):
         self.data = data
         self.start_amount = start_amount
@@ -22,6 +25,13 @@ class MACDTester:
         self.num_of_transactions = 0
         self.commission_rate = commission
         self.total_commission = 0
+        if macd_buy_level and macd_sell_level:
+            self.level_manager = BuyAndSellLevelManager(
+                macd_buy_level=macd_buy_level,
+                macd_sell_level=macd_sell_level,
+            )
+        else:
+            self.level_manager = None
 
     def get_sell_dates(self) -> List[Timestamp]:
         sell_transactions = filter(
@@ -59,6 +69,16 @@ class MACDTester:
         if self.transactions:
             return self.transactions[-1]
         return None
+
+    def validate_transaction_level(
+        self, macd: DataFrame, transaction_type: TransactionType
+    ) -> bool:
+        if self.level_manager is None:
+            return True
+        else:
+            if self.level_manager.check_level(macd, transaction_type):
+                return True
+        return False
 
     def _buy(self, date: Timestamp, price: float) -> bool:
         self.asset_amount = self.capital / price
@@ -103,12 +123,24 @@ class MACDTester:
             row = self.data.iloc[i]
             histogram = row["histogram"]
             close_price = row["close"]
+            macd = row["macd"]
             stop_loss_order = self.stop_loss_manager.get_order(close_price, holding)
-            if stop_loss_order == StopLossOrder.SELL:
+            if (
+                stop_loss_order == StopLossOrder.SELL
+                and self.validate_transaction_level(macd, TransactionType.SELL)
+            ):
                 holding = self._sell(date, close_price)
-            elif histogram > 0 and not holding:
+            elif (
+                histogram > 0
+                and not holding
+                and self.validate_transaction_level(macd, TransactionType.BUY)
+            ):
                 holding = self._buy(date, close_price)
-            elif histogram < 0 and holding:
+            elif (
+                histogram < 0
+                and holding
+                and self.validate_transaction_level(macd, TransactionType.SELL)
+            ):
                 holding = self._sell(date, close_price)
         if self.capital:
             total_return = self.capital - self.start_amount
@@ -124,13 +156,8 @@ if __name__ == "__main__":
 
     data = get_data(TimeFrame.DAILY, date_from="2019-06-07", date_to="2022-03-01")
     print(data)
-    macd_data = get_macd(data)
-    macd_tester = MACDTester(macd_data, commission=0.00075)
-    # print(f"Total return: {macd_tester.get_total_return()}$")
-    print(macd_tester.get_total_return() + macd_tester.total_commission)
-    print(f"Number of transactions: {macd_tester.num_of_transactions}")
-    print(f"Total commission: {macd_tester.total_commission}%")
-    print(macd_tester.get_transaction_profits())
-    print(macd_tester.transactions)
+    macd_data = get_macd(data, 29, 48)
+    macd_tester = MACDTester(macd_data)
+    print(f"Total return: {macd_tester.get_total_return()}$")
     logger = TransactionLogger()
     logger.log_transactions_info(macd_tester.transactions)
