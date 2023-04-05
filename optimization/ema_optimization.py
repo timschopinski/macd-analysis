@@ -9,10 +9,8 @@ def find_optimal_macd_parameters(
 ) -> tuple[int, int]:
     best_params = (12, 26)
     best_return = -float("inf")
-
     first_ema_range = range(5, 30)
     second_ema_range = range(10, 50)
-
     for params in itertools.product(first_ema_range, second_ema_range):
         first_ema, second_ema = params
         if first_ema == second_ema:
@@ -22,7 +20,6 @@ def find_optimal_macd_parameters(
         if total_return > best_return:
             best_return = total_return
             best_params = params
-
     return best_params
 
 

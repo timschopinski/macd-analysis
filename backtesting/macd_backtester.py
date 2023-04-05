@@ -96,9 +96,6 @@ class MACDTester:
         return False
 
     def get_total_return(self) -> float:
-        """
-        Returns a total_return after backtesting
-        """
         holding = False
         close_price = 0
         for i in range(len(self.data)):
